@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAppWithWrapper", "SampleAppWithWrapper.csproj", "{C5FDDFE4-B3A4-4BFB-8F2E-889FBA56543F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5FDDFE4-B3A4-4BFB-8F2E-889FBA56543F}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C5FDDFE4-B3A4-4BFB-8F2E-889FBA56543F}.Release|Any CPU.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0B2404F-8DE4-45DB-8097-B131BA914787}
+	EndGlobalSection
+EndGlobal
