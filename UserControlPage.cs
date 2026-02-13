@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Markup;
 
 namespace SampleAppWithWrapper
 {
@@ -21,6 +23,30 @@ namespace SampleAppWithWrapper
         {
             InitializeComponent();
             LoadPorts();
+            LoadData();
+        }
+        private void LoadData()
+        {
+            try
+            {
+                string[] data = File.ReadAllLines(config);
+               
+                    comboBox2.SelectedItem = data[0];
+                targetQTY.Text = data[1];
+                Compare_string.Text = data[2];
+                    textBox2.Text = data[3];
+              
+
+            }
+            catch (Exception ex)
+            {
+                if (cmbPorts.Items.Contains("COM2"))
+                {
+                    cmbPorts.SelectedItem = "COM2";
+                }
+                targetQTY.Text = 45.ToString();
+                Compare_string.Text = "C";
+            }
         }
         private void UserControlPage_Load(object sender, EventArgs e)
         {
@@ -38,9 +64,10 @@ namespace SampleAppWithWrapper
 
         private void Print_button_Click(object sender, EventArgs e)
         {
+            var_update();
             printerSetting.print();
         }
-
+        string pub_fp = "";
         private void selectFile_Click(object sender, EventArgs e)
         {
             List<string> vars = new List<string>();
@@ -53,18 +80,35 @@ namespace SampleAppWithWrapper
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+
                     string filePath = ofd.FileName;
+                    Invoke(new Action(() =>
+                    {
+                        textBox2.Text = filePath;
+                    }));
+                    pub_fp = ofd.FileName;
                     vars = printerSetting.change_active_doc(filePath);
                     foreach (string i in vars)
                     {
                         comboBox2.Items.Add(i);
                     }
+                    save_file();
                 }
             }
             pbLabelPreview.Image = printerSetting.UpdateLabelPreview2().Image;
             printerSetting.UpdatePrinterList();
         }
-
+        private void save_file()
+        {
+            try
+            {
+                string[] data = { cmbPorts.SelectedItem.ToString(), targetQTY.Text, Compare_string.Text, pub_fp };
+                File.WriteAllLines("config.txt", data);
+            }
+            catch(Exception ex) {
+                throw ex;
+            }
+        }
 
 
         private void button2_Click(object sender, EventArgs e)
@@ -111,14 +155,14 @@ namespace SampleAppWithWrapper
             try
             {
                 string data = _serialPort.ReadExisting();
-                if (data.Contains(textBox4.Text))
+                if (data.Contains(Compare_string.Text))
                 {
                     count++;
                     Invoke(new Action(() =>
                     {
                         textBox3.Text = count.ToString();
                     }));
-                    if (count == int.Parse(textBox2.Text))
+                    if (count == int.Parse(targetQTY.Text))
                     {
                         var_update();
                         printerSetting.print();
@@ -151,6 +195,11 @@ namespace SampleAppWithWrapper
         private void button3_Click(object sender, EventArgs e)
         {
             open_serial();
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
 
         }
     }
