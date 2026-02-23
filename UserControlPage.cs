@@ -8,7 +8,6 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Markup;
 
@@ -124,6 +123,22 @@ namespace SampleAppWithWrapper
         }
 
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                DialogResult result = MessageBox.Show(
+                    "Are you sure you want to exit?",
+                    "Confirm Exit",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2);  
+
+                if (result == DialogResult.No)
+                    e.Cancel = true;
+            }
+        }
+
 
 
 
@@ -132,12 +147,21 @@ namespace SampleAppWithWrapper
         SerialPort _serialPort;
         public void open_serial()
         {
+            if (_serialPort != null && _serialPort.IsOpen)
+            {
+                Invoke(new Action(() =>
+                {
+                    AddLog("Serial Port Already in OPEN");
+                }));
+                return;
+            }
             _serialPort = new SerialPort(
                  "COM2",
                   9600,
                   Parity.Even,
                   7,
                   StopBits.One);
+
             _serialPort.DataReceived += SerialPort_DataReceived;
             _serialPort.Open();
             richTextBox1.AppendText("Serial Port Opened\r\n");
@@ -173,7 +197,7 @@ namespace SampleAppWithWrapper
                 // Because this event runs on another thread
                 Invoke(new Action(() =>
                 {
-                    richTextBox1.AppendText(data);
+                    AddLog(data);
                 }));
             }
             catch { }
@@ -186,6 +210,24 @@ namespace SampleAppWithWrapper
             pbLabelPreview.Image = printerSetting.UpdateLabelPreview2().Image;
         }
         #endregion
+
+
+
+
+        private const int MAX_LINES = 100;
+        public void AddLog(string text)
+        {
+            richTextBox1.AppendText(text + Environment.NewLine);
+            int totalLines = richTextBox1.Lines.Length;
+            if (totalLines > MAX_LINES)
+            {
+                int removeUpto = richTextBox1.GetFirstCharIndexFromLine(totalLines - MAX_LINES);
+                richTextBox1.Select(0, removeUpto);
+                richTextBox1.SelectedText = "";
+            }
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            richTextBox1.ScrollToCaret();
+        }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {

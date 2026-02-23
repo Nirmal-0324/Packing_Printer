@@ -207,6 +207,8 @@
             this.Name = "UserControlPage";
             this.Text = "UserControlPage";
             this.Load += new System.EventHandler(this.UserControlPage_Load);
+            this.FormClosing += Form1_FormClosing;
+
             ((System.ComponentModel.ISupportInitialize)(this.pbLabelPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

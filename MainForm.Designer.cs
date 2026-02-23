@@ -269,6 +269,7 @@ namespace SampleAppWithWrapper
             this.Name = "SampleAppMainForm";
             this.Text = ".NET Wrapper Demo Application";
             this.Load += new System.EventHandler(this.SampleAppMainForm_Load);
+
             ((System.ComponentModel.ISupportInitialize)(this.pbLabelPreview)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
