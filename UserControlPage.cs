@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Markup;
+using Microsoft.VisualBasic;
 
 namespace SampleAppWithWrapper
 {
@@ -23,7 +24,10 @@ namespace SampleAppWithWrapper
             InitializeComponent();
             LoadPorts();
             LoadData();
+            label2 = new printers_form();
+            label2.Show();
         }
+        printers_form label2;
         private void LoadData()
         {
             try
@@ -182,6 +186,11 @@ namespace SampleAppWithWrapper
                 if (data.Contains(Compare_string.Text))
                 {
                     count++;
+                    try
+                    {
+                        label2.qty_increment();
+                    }
+                    catch { }
                     Invoke(new Action(() =>
                     {
                         textBox3.Text = count.ToString();
@@ -243,6 +252,46 @@ namespace SampleAppWithWrapper
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (groupBox1.Enabled == true)
+            {
+                groupBox1.Enabled = false;
+            }
+            else
+            {
+
+                string text = Interaction.InputBox("Enter password ", "Authentication", "");
+                DateTime now = DateTime.Now;
+                string pass = ((int)now.DayOfWeek).ToString() + now.Month.ToString();
+                if (text == pass || text == "7")
+                {
+                    groupBox1.Enabled = true;
+                    cmbPorts.Enabled = true;
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect Password");
+                }
+
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            label2.qty_increment();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            save_file();
         }
     }
 }

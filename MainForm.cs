@@ -216,7 +216,7 @@ namespace SampleAppWithWrapper
             {
                 Variable aVariable = ActiveDoc.Variables[variable];
                 aVariable.Value = value;
-            }
+             }
 
             UpdateLabelPreview();
         }

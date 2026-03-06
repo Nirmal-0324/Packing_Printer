@@ -14,7 +14,7 @@ namespace SampleAppWithWrapper
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UserControlPage());
+            Application.Run(new UserControlPage ());
         }
     }
 }
