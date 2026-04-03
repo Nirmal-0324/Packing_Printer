@@ -30,7 +30,9 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button9 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button8 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -74,7 +76,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button5 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -103,6 +104,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button9);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -113,6 +115,16 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(532, 344);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(75, 20);
+            this.button9.TabIndex = 13;
+            this.button9.Text = "Unlock";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // groupBox2
             // 
@@ -128,6 +140,17 @@
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Variables";
+            // 
+            // button8
+            // 
+            this.button8.Enabled = false;
+            this.button8.Location = new System.Drawing.Point(183, 177);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(150, 32);
+            this.button8.TabIndex = 22;
+            this.button8.Text = "Printer Setting";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button6
             // 
@@ -302,6 +325,7 @@
             // 
             // Customer_pn
             // 
+            this.Customer_pn.Enabled = false;
             this.Customer_pn.Location = new System.Drawing.Point(225, 19);
             this.Customer_pn.Name = "Customer_pn";
             this.Customer_pn.Size = new System.Drawing.Size(123, 20);
@@ -310,6 +334,7 @@
             // 
             // Dell_carton_constant
             // 
+            this.Dell_carton_constant.Enabled = false;
             this.Dell_carton_constant.Location = new System.Drawing.Point(6, 19);
             this.Dell_carton_constant.Name = "Dell_carton_constant";
             this.Dell_carton_constant.Size = new System.Drawing.Size(92, 20);
@@ -386,7 +411,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 9;
-            this.button2.Text = "button2";
+            this.button2.Text = "Update";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -405,11 +430,12 @@
             // 
             // button1
             // 
+            this.button1.Enabled = false;
             this.button1.Location = new System.Drawing.Point(218, 19);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 7;
-            this.button1.Text = "button1";
+            this.button1.Text = "Select";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -551,16 +577,6 @@
             this.button5.Text = "button5";
             this.button5.UseVisualStyleBackColor = true;
             // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(183, 170);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(150, 32);
-            this.button8.TabIndex = 22;
-            this.button8.Text = "Printer Setting";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
             // printers_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -641,5 +657,6 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,11 +7,11 @@ using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Markup;
-using Microsoft.VisualBasic;
 
 namespace SampleAppWithWrapper
 {
@@ -22,6 +23,7 @@ namespace SampleAppWithWrapper
         public UserControlPage()
         {
             InitializeComponent();
+            Lock();
             LoadPorts();
             LoadData();
             label2 = new printers_form();
@@ -37,8 +39,11 @@ namespace SampleAppWithWrapper
                     comboBox2.SelectedItem = data[0];
                 targetQTY.Text = data[1];
                 Compare_string.Text = data[2];
-                    textBox2.Text = data[3];
-              
+                textBox2.Text = data[3];
+                textBox3.Text = data[4];
+                count = int.Parse(data[4]);
+                printerSetting.select_printer(data[5]);
+
 
             }
             catch (Exception ex)
@@ -57,6 +62,9 @@ namespace SampleAppWithWrapper
             printerSetting = new SampleAppMainForm();
             printerSetting.Show();
             printerSetting.Visible = false;
+            load_label();
+         //   groupBox1.Enabled = false;
+
 
         }
         private SampleAppMainForm printerSetting;
@@ -69,6 +77,24 @@ namespace SampleAppWithWrapper
         {
             var_update();
             printerSetting.print();
+        }
+        public void load_label()
+        {
+            try
+            {
+                List<string> vars = new List<string>();
+                vars = printerSetting.change_active_doc(textBox2.Text);
+                foreach (string i in vars)
+                {
+                    comboBox2.Items.Add(i);
+                }
+                pbLabelPreview.Image = printerSetting.UpdateLabelPreview2().Image;
+                printerSetting.UpdatePrinterList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         string pub_fp = "";
         private void selectFile_Click(object sender, EventArgs e)
@@ -105,7 +131,9 @@ namespace SampleAppWithWrapper
         {
             try
             {
-                string[] data = { cmbPorts.SelectedItem.ToString(), targetQTY.Text, Compare_string.Text, pub_fp };
+                pub_fp = textBox2.Text;
+
+                string[] data = { cmbPorts.SelectedItem.ToString(), targetQTY.Text, Compare_string.Text, pub_fp, textBox3.Text, printerSetting.selectedPrinterName };
                 File.WriteAllLines("config.txt", data);
             }
             catch(Exception ex) {
@@ -185,23 +213,12 @@ namespace SampleAppWithWrapper
                 string data = _serialPort.ReadExisting();
                 if (data.Contains(Compare_string.Text))
                 {
-                    count++;
                     try
                     {
                         label2.qty_increment();
                     }
                     catch { }
-                    Invoke(new Action(() =>
-                    {
-                        textBox3.Text = count.ToString();
-                    }));
-                    if (count == int.Parse(targetQTY.Text))
-                    {
-                        var_update();
-                        printerSetting.print();
-
-                        count = 0;
-                    }
+                    increase_count();
                 }
                 // Because this event runs on another thread
                 Invoke(new Action(() =>
@@ -211,6 +228,29 @@ namespace SampleAppWithWrapper
             }
             catch { }
         }
+        public void increase_count()
+        {
+            count = int.Parse(textBox3.Text) + 1;
+            textBox3.Text = count.ToString();
+
+
+
+            if (count >= int.Parse(targetQTY.Text))
+            {
+                var_update();
+                printerSetting.print();
+
+                count = 0;
+                Invoke(new Action(() =>
+                {
+                    textBox3.Text = count.ToString();
+                }));
+
+            }
+            save_file();
+        }
+
+
 
 
         public void var_update()
@@ -246,6 +286,7 @@ namespace SampleAppWithWrapper
         private void button3_Click(object sender, EventArgs e)
         {
             open_serial();
+            button3.Enabled = false;
 
         }
 
@@ -253,29 +294,89 @@ namespace SampleAppWithWrapper
         {
 
         }
-
-        private void button4_Click(object sender, EventArgs e)
+        bool isenabled = false;
+        private void Lock()
         {
-            if (groupBox1.Enabled == true)
+            button5.Enabled = false;
+            Compare_string.Enabled = false;
+
+            selectFile.Enabled = false;
+            button1.Enabled = false;
+            button3.Enabled = false;
+
+
+            button2.Enabled = false;
+            Print_button.Enabled = false;
+            targetQTY.Enabled = false;
+            textBox3.Enabled = false;
+            button6.Enabled = false;
+            isenabled = false;
+        }
+        private void unlock()
+        {
+
+            Enter temp7 = new Enter();
+            temp7.ShowDialog();
+            string text = temp7.password;
+            System.DateTime now = System.DateTime.Now;
+            string pass = ((int)now.DayOfWeek).ToString() + now.Day + now.Month.ToString();
+            if (text == pass)
             {
-                groupBox1.Enabled = false;
+                button5.Enabled = true;
+                Compare_string.Enabled = true;
+
+                selectFile.Enabled = true;
+                button1.Enabled=true;
+                button3.Enabled=true;
+                printerSetting.Enabled = true;
+
+
+                button2.Enabled= true;
+                Print_button.Enabled = true;
+                targetQTY.Enabled = true;
+                textBox3 .Enabled = true;
+                button6 .Enabled = true;
+                button4.Text = "Lock";
+
+                isenabled = true;
+
+            }
+            else if (text == "NBBUQA@789")
+            {
+                button2.Enabled = true;
+                Print_button.Enabled = true;
+                targetQTY.Enabled = true;
+                textBox3.Enabled = true;
+                button6.Enabled = true;
+                isenabled = true;
+                button4.Text = "Lock";
+
+
+            }
+            else if (text == "NBBUIE@432")
+            {
+                selectFile.Enabled = true;
+                button1.Enabled = true;
+                button3.Enabled = true;
+                printerSetting.Enabled = true;
+                isenabled = true;
+                button4.Text = "Lock";
+
             }
             else
             {
-
-                string text = Interaction.InputBox("Enter password ", "Authentication", "");
-                DateTime now = DateTime.Now;
-                string pass = ((int)now.DayOfWeek).ToString() + now.Month.ToString();
-                if (text == pass || text == "7")
-                {
-                    groupBox1.Enabled = true;
-                    cmbPorts.Enabled = true;
-                }
-                else
-                {
-                    MessageBox.Show("Incorrect Password");
-                }
-
+                MessageBox.Show("Incorrect Password");
+            }
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (isenabled == true)
+            {
+                Lock();
+            }
+            else
+            {
+                unlock();
             }
         }
 
@@ -287,6 +388,7 @@ namespace SampleAppWithWrapper
         private void button5_Click(object sender, EventArgs e)
         {
             label2.qty_increment();
+            increase_count();
         }
 
         private void button6_Click(object sender, EventArgs e)

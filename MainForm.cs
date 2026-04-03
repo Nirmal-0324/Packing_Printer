@@ -26,13 +26,19 @@ namespace SampleAppWithWrapper
 
         private void SampleAppMainForm_Load(object sender, EventArgs e)
         {
-            NetApp = new Tkx.Lppa.Application();
-            NetApp.PreloadUI();
+            try
+            {
+                NetApp = new Tkx.Lppa.Application();
+                NetApp.PreloadUI();
 
-            //NetApp = Tkx.Lppa.Application.SelectApplication();
+                //NetApp = Tkx.Lppa.Application.SelectApplication();
 
-           // tbLabelFolder.Text = NetApp.DefaultFilePath;
-            UpdatePrinterList();
+                // tbLabelFolder.Text = NetApp.DefaultFilePath;
+                UpdatePrinterList();
+            }
+            catch(Exception ex) {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
           //  comboBoxPrinter.SelectedIndex = 2;
 
         }
@@ -212,13 +218,18 @@ namespace SampleAppWithWrapper
        
         public void change_variable(string variable, string value)
         {
-            if (ActiveDoc != null)
+            try
             {
-                Variable aVariable = ActiveDoc.Variables[variable];
-                aVariable.Value = value;
-             }
+                if (ActiveDoc != null)
+                {
+                    Variable aVariable = ActiveDoc.Variables[variable];
+                    aVariable.Value = value;
+                }
 
-            UpdateLabelPreview();
+                UpdateLabelPreview();
+            } catch(Exception x) {
+                System.Windows.Forms.MessageBox.Show(x.Message +$" : Variable {{{variable}}} May not available in Label templete ");
+            }
         }
         private void btnPageSetup_Click(object sender, EventArgs e)
         {
@@ -253,14 +264,18 @@ namespace SampleAppWithWrapper
             {
             }
         }
-
-        private void comboBoxPrinter_SelectedIndexChanged(object sender, EventArgs e)
+        public void select_printer(string PrinterName)
         {
             if (ActiveDoc != null)
             {
-                string PrinterName = comboBoxPrinter.Text;
                 ActiveDoc.Printer.SwitchTo(PrinterName);
+                selectedPrinterName = PrinterName;
             }
+        }
+       public string selectedPrinterName = string.Empty;
+        private void comboBoxPrinter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            select_printer(comboBoxPrinter.Text);
         }
 
         private void button1_Click(object sender, EventArgs e)

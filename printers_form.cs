@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +23,7 @@ namespace SampleAppWithWrapper
         public printers_form()
         {
             InitializeComponent();
+            Lock();
             load_last_values();
             ForDateCode();
 
@@ -33,6 +35,7 @@ namespace SampleAppWithWrapper
             timer.Interval = 1000; // 1 minute
             timer.Tick += Timer_Tick;
             timer.Start();
+          //  MessageBox.Show("1");
         }
         private void load_last_values()
         {
@@ -40,32 +43,43 @@ namespace SampleAppWithWrapper
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (System.DateTime.Now.Hour > 0)
-            {
+            
                 update_datecode();
-            }
+            
         }
         public void update_datecode()
         {
-            char[] dateArray =
-             {
+            if (groupBox3.Enabled == false)
+            {
+                char[] dateArray =
+                 {
                 '1','2','3','4','5','6','7','8','9',
                 'A','B','C','D','E','F','G','H','I','J',
                 'K','L','M','N','O','P','Q','R','S','T',
                 'U','V','W','X','Y','Z'
-            };
-            System.DateTime now = System.DateTime.Now;
-            string temp1 = now.Month.ToString();
-            string temp2 = now.Year.ToString();
+                   };
+                System.DateTime now = System.DateTime.Now;
+                string temp1 = now.Month.ToString();
+                string temp2 = now.Year.ToString();
 
-            string dateCode = dateArray[now.Day - 1].ToString() + temp1[temp1.Length - 1].ToString() + temp2[temp2.Length - 1].ToString();
-            Date_code.Text = dateCode;
+                string dateCode = temp2[temp2.Length - 1].ToString() + temp1[temp1.Length - 1].ToString() + dateArray[now.Day - 1].ToString();
+                Date_code.Text = dateCode;
+
+                if (now.Date.ToString() != temp5)
+                {
+                    temp5 = now.Date.ToString();
+                    RunningSerialNumber.Text = 1.ToString("D6");
+                    SaveData();
+
+                }
+            }
         }
         DataTable dt;
         private System.Windows.Forms.Timer timer;
 
         private void printers_form_Load(object sender, EventArgs e)
         {
+         
             dt = new DataTable();
             string[] lines = File.ReadAllLines("part_numbers.csv");
 
@@ -89,8 +103,11 @@ namespace SampleAppWithWrapper
             printerSetting = new SampleAppMainForm();
             printerSetting.Show();
             printerSetting.Visible = false;
+            load_label();
+
+           // groupBox2.Enabled = false;
         }
-        private void LoadModels()
+        public void LoadModels()
         {
             comboBox1.Items.Clear();
 
@@ -131,7 +148,16 @@ namespace SampleAppWithWrapper
         }
 
         private void EditInfo_Click(object sender, EventArgs e)
-        { }
+        {
+            PortNumbers temp4 = new PortNumbers();
+            temp4.Show();
+            temp4.FormClosed += temp_closed;
+
+        }
+        private void temp_closed(object sender, FormClosedEventArgs e)
+        {
+            LoadModels();
+        }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             comboBox2.Items.Clear();
@@ -174,6 +200,7 @@ namespace SampleAppWithWrapper
                 }
             }
         }
+        string temp5 = string.Empty;
         private async void LoadData()
         {
             if (!File.Exists("appstate.json"))
@@ -197,10 +224,13 @@ namespace SampleAppWithWrapper
 
             // Integers -> convert to string for Text
             RunningSerialNumber.Text = state.RunningSN.ToString("D6");
-            Qty.Text = state.Qty.ToString();
+            runningSN = state.RunningSN;
+            Qty.Text = state.RunningQty.ToString();
             Qty_2.Text = state.Qty.ToString();
             Currrent_Qty.Text = state.RunningQty.ToString();
-
+            textBox1.Text = state.label_location;
+            temp5 = state.UpdatedDate;
+            printerSetting.select_printer(state.SelectedPrinter);
             // Restore label contents
             //if (state.LabelContents != null)
             //{
@@ -215,6 +245,7 @@ namespace SampleAppWithWrapper
             //    }
             //}
         }
+        int runningSN = 0;
         private void SaveData()
         {
             AppState state = new AppState();
@@ -228,14 +259,14 @@ namespace SampleAppWithWrapper
             state.Constant1 = Dell_carton_constant.Text;
 
             // Integers (convert safely)
-            int.TryParse(RunningSerialNumber.Text, out int runningSN);
-            int.TryParse(Qty.Text, out int qty);
+            int.TryParse(RunningSerialNumber.Text, out runningSN);
+            int.TryParse(Qty_2.Text, out int qty);
             int.TryParse(Currrent_Qty.Text, out int runningQty);
 
             state.RunningSN = runningSN;
             state.Qty = qty;
             state.RunningQty = runningQty;
-
+            state.label_location = textBox1.Text;
             // Save label contents (if needed)
             state.LabelContents = this.Controls
                 .OfType<Label>()
@@ -243,9 +274,29 @@ namespace SampleAppWithWrapper
                 .ToList();
 
             // Serialize
+            state.UpdatedDate = temp5;
+            state.SelectedPrinter = printerSetting.selectedPrinterName;
             string json = JsonConvert.SerializeObject(state, Formatting.Indented);
 
             File.WriteAllText("appstate.json", json);
+        }
+        public void load_label()
+        {
+            try
+            {
+                List<string> vars = new List<string>();
+                vars = printerSetting.change_active_doc(textBox1.Text);
+                foreach (string i in vars)
+                {
+                    comboBox4.Items.Add(i);
+                }
+                pbLabelPreview.Image = printerSetting.UpdateLabelPreview2().Image;
+                  printerSetting.UpdatePrinterList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -312,13 +363,15 @@ namespace SampleAppWithWrapper
         {
             Qty.Text = (int.Parse(Qty.Text)+1).ToString();
             Currrent_Qty.Text = Qty.Text;
-            if(int.Parse(Qty_2.Text) <= int.Parse(Currrent_Qty.Text))
+            if (int.Parse(Qty_2.Text) <= int.Parse(Currrent_Qty.Text))
             {
                 print_label();
+                RunningSerialNumber.Text = (runningSN + 1).ToString("D6");
                 Currrent_Qty.Text = "0";
                 Qty.Text = "0";
 
             }
+            SaveData();
         }
         private void button6_Click(object sender, EventArgs e)
         {
@@ -333,11 +386,84 @@ namespace SampleAppWithWrapper
         {
             printerSetting.Visible = true;
         }
+        public string password { get; private set; }
+        bool isenabled = true;
+        private void Lock()
+        {
+            groupBox3.Enabled = false;
+            groupBox4.Enabled = false;
+            groupBox5.Enabled = false;
+            button4.Enabled = false;
+            button6.Enabled = false;
+            //  groupBox2.Enabled = false;
+            button1.Enabled = false;
+            button8.Enabled = false;
+            button9.Text = "Unlock";
+            isenabled = false;
+        }
+        private void unlock()
+        {
+
+            Enter temp7 = new Enter();
+            temp7.ShowDialog();
+            string text = temp7.password;
+            System.DateTime now = System.DateTime.Now;
+            string pass = ((int)now.DayOfWeek).ToString() + now.Day + now.Month.ToString();
+            if (text == pass)
+            {
+                groupBox3.Enabled = true;
+                groupBox4.Enabled = true;
+                groupBox5.Enabled = true;
+                button4.Enabled = true;
+                button6.Enabled = true;
+                groupBox2.Enabled = true;
+                button1.Enabled = true;
+                button8.Enabled = true;
+                button9.Text = "Lock";
+
+                button9.Text = "Lock";
+                isenabled = true;
+
+            }
+            else if (text == "NBBUQA@789")
+            {
+                groupBox3.Enabled = true;
+                groupBox4.Enabled = true;
+                groupBox5.Enabled = true;
+                button4.Enabled = true;
+                button6.Enabled = true;
+                isenabled = true;
+
+            }
+            else if (text == "NBBUIE@432")
+            {
+                button1.Enabled = true;
+                button8.Enabled = true;
+                button9.Text = "Lock";
+                isenabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Incorrect Password");
+            }
+        }
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if (isenabled == true)
+            {
+                Lock();
+            }
+            else
+            {
+                unlock();
+            }
+        }
     }
 
 
     public class AppState
     {
+        public string label_location { get; set; }
         public int ModelSelectedIndex { get; set; }
         public int CustSelectedIndex { get; set; }
         public string PartNumber { get; set; }
@@ -345,6 +471,9 @@ namespace SampleAppWithWrapper
         public int RunningSN { get; set; }
         public int Qty { get; set; }
         public int RunningQty { get; set; }
+        public int lastSerialNumber { get; set; }
         public List<string> LabelContents { get; set; }
+        public string UpdatedDate { get; set; }
+        public string SelectedPrinter {  get; set; } 
     }
 }

@@ -87,6 +87,15 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PASSWORD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PASSWORD.Designer.cs">
+      <DependentUpon>PASSWORD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="password1.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="PortNumbers.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +119,9 @@
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PASSWORD.resx">
+      <DependentUpon>PASSWORD.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PortNumbers.resx">
       <DependentUpon>PortNumbers.cs</DependentUpon>
