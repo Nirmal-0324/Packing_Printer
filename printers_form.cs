@@ -97,15 +97,19 @@ namespace SampleAppWithWrapper
                     dt.Rows.Add(data);
                 }
             }
+            printerSetting = new SampleAppMainForm();
 
             LoadModels();
             LoadData();
-            printerSetting = new SampleAppMainForm();
             printerSetting.Show();
             printerSetting.Visible = false;
             load_label();
-
+            check_data();
            // groupBox2.Enabled = false;
+        }
+        public void  check_data()
+        {
+              
         }
         public void LoadModels()
         {
@@ -220,8 +224,16 @@ namespace SampleAppWithWrapper
             // TextBoxes (string)
             Customer_pn.Text = state.PartNumber;
             Customer_pn_2.Text = state.PartNumber;
-            Dell_carton_constant.Text = state.Constant1;
+            //   Dell_carton_constant.Text = state.Constant1;
+            try
+            {
 
+                Dell_carton_constant.Text = File.ReadAllText("carton_constant.txt");
+            }
+            catch
+            {
+                File.WriteAllText("carton_constant.txt", "90450DEM00");
+            }
             // Integers -> convert to string for Text
             RunningSerialNumber.Text = state.RunningSN.ToString("D6");
             runningSN = state.RunningSN;
@@ -361,18 +373,22 @@ namespace SampleAppWithWrapper
         }
         public void qty_increment()
         {
-            Qty.Text = (int.Parse(Qty.Text)+1).ToString();
-            Currrent_Qty.Text = Qty.Text;
-            if (int.Parse(Qty_2.Text) <= int.Parse(Currrent_Qty.Text))
+            if (isStarted)
             {
-                print_label();
-                RunningSerialNumber.Text = (runningSN + 1).ToString("D6");
-                Currrent_Qty.Text = "0";
-                Qty.Text = "0";
+                Qty.Text = (int.Parse(Qty.Text) + 1).ToString();
+                Currrent_Qty.Text = Qty.Text;
+                if (int.Parse(Qty_2.Text) <= int.Parse(Currrent_Qty.Text))
+                {
+                    print_label();
+                    RunningSerialNumber.Text = (runningSN + 1).ToString("D6");
+                    Currrent_Qty.Text = "0";
+                    Qty.Text = "0";
 
+                }
+                SaveData();
             }
-            SaveData();
         }
+        private bool isStarted = false;
         private void button6_Click(object sender, EventArgs e)
         {
             print_label();
@@ -457,6 +473,11 @@ namespace SampleAppWithWrapper
             {
                 unlock();
             }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedIndex != -1 && comboBox2.SelectedIndex != -1)
         }
     }
 

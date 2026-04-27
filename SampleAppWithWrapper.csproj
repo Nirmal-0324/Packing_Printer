@@ -143,6 +143,7 @@
       <DependentUpon>UserControlPage.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="mine.7z" />
     <None Include="packages.config" />
     <None Include="part_numbers.csv" />
     <None Include="Properties\Settings.settings">
